@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ping_pong.v1;
+option go_package = "github.com/meo-s/grpc-ping-pong/api/ping_pong/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+service PingPongRpc {
+    rpc Call (google.protobuf.Empty) returns (google.protobuf.StringValue) {};
+}
