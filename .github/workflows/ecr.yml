@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  buildAndPushContainerImageToECR:
+    name: Build and Push Container Image to ECR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Container Image
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-8)
+        docker build -f build/Dockerfile -t ${{ github.repository }}:$SHORT_SHA .
+    - name: Login to ECR
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.AWS_ECR_REGISTRY }}
+        username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Push Container Image to ECR
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-8)
+        docker tag ${{ github.repository }}:$SHORT_SHA $AWS_ECR_REGISTRY/grpc-ping-pong:$SHORT_SHA
+        docker push $AWS_ECR_REGISTRY/grpc-ping-pong:$SHORT_SHA
