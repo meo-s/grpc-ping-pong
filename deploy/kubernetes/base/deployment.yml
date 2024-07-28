@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-ping-pong
+spec:
+  selector:
+    matchLabels:
+      app: grpc-ping-pong
+  template:
+    metadata:
+      labels:
+        app: grpc-ping-pong
+    spec:
+      containers:
+      - name: grpc-ping-pong
+        image: grpc-ping-pong
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 50051
